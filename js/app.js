@@ -293,25 +293,16 @@ var APP = {
     function onDocumentKeyDown(event) {
       switch (event.key) {
         case 's':
-          // scene.rotation.y = 0;
+          scene.rotation.y = 0;
           camera.position.x = 0;
           camera.position.y = 5;
           camera.position.z = 15;
           camera.rotation.x = 0;
           camera.rotation.y = 0;
           camera.rotation.z = 0;
-          // scene.children[0].position.x = -1.2;
-          // scene.children[0].position.z = -2;
-          break;
-        case 'r':
-          sceneRotation.play();
           break;
         default:
-          console.log(event.key);
-
-          sceneRotation.to(scene.rotation, 1, {
-            y: '1'
-          })
+      // console.log(event.key);
       }
 
       dispatch(events.keydown, event);
@@ -326,8 +317,11 @@ var APP = {
 
     // alert("use 's' to reset the frame, 'r' to start the rotation and click on the gear cassette to start the animation");
     let animationPlayed = false;
+    let keyDown = false;
 
     function onDocumentMouseDown(event) {
+      keyDown = true;
+
       const frame = scene.children[0].children[1];
       const cassette = scene.children[0].children[3];
       const padel = scene.children[0].children[2];
@@ -362,6 +356,9 @@ var APP = {
       }, 'start')
         .to(camera.rotation, 2, {
           y: 1,
+        }, 'start')
+        .to(scene.rotation, 2, {
+          y: 0,
         }, 'start')
         .add(discMovement.play(), 'start+=1')
         .add(discRotation.play(), 'start+=1')
@@ -400,12 +397,41 @@ var APP = {
     }
 
     function onDocumentMouseUp(event) {
+      keyDown = false;
 
       dispatch(events.mouseup, event);
 
     }
 
     function onDocumentMouseMove(event) {
+
+      mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+      mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+      raycaster.setFromCamera(mouse, camera);
+      var intersects = raycaster.intersectObjects(scene.children[0].children[3].children);
+
+      if (intersects.length > 0) {
+        hover(true, 0.5);
+      } else {
+        hover(false, 1);
+      }
+
+      function hover(a, b) {
+        scene.children[0].children[3].children.forEach(function(element) {
+          element.material.transparent = a;
+          element.material.opacity = b;
+        });
+      }
+      const middleOfScreen = window.innerWidth / 2;
+
+      if (keyDown) {
+        // console.log((event.pageX - middleOfScreen) / middleOfScreen)
+
+        scene.rotation.y = (event.pageX - middleOfScreen) / middleOfScreen;
+      }
+
+
 
       dispatch(events.mousemove, event);
 
