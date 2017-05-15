@@ -302,8 +302,15 @@ var APP = {
           // scene.children[0].position.x = -1.2;
           // scene.children[0].position.z = -2;
           break;
+        case 'r':
+          sceneRotation.play();
+          break;
         default:
           console.log(event.key);
+
+          sceneRotation.to(scene.rotation, 8, {
+            y: '8'
+          })
       }
 
       dispatch(events.keydown, event);
@@ -316,7 +323,7 @@ var APP = {
 
     }
 
-    alert("use s to reset the frame and click on the gear cassette to start the animation");
+    alert("use 's' to reset the frame, 'r' to start the rotation and click on the gear cassette to start the animation");
 
     function onDocumentMouseDown(event) {
       const frame = scene.children[0].children[1];
@@ -337,10 +344,6 @@ var APP = {
         cameraMovement.play();
         bikeColor();
       }
-
-      sceneRotation.to(scene.rotation, 8, {
-        y: '8'
-      })
 
       cameraMovement.to(camera.position, 2, {
         x: 3.5,
