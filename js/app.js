@@ -293,6 +293,7 @@ var APP = {
     function onDocumentKeyDown(event) {
       switch (event.key) {
         case 's':
+          // scene.rotation.y = 0;
           camera.position.x = 0;
           camera.position.y = 5;
           camera.position.z = 15;
@@ -308,8 +309,8 @@ var APP = {
         default:
           console.log(event.key);
 
-          sceneRotation.to(scene.rotation, 8, {
-            y: '8'
+          sceneRotation.to(scene.rotation, 1, {
+            y: '1'
           })
       }
 
@@ -323,7 +324,8 @@ var APP = {
 
     }
 
-    alert("use 's' to reset the frame, 'r' to start the rotation and click on the gear cassette to start the animation");
+    // alert("use 's' to reset the frame, 'r' to start the rotation and click on the gear cassette to start the animation");
+    let animationPlayed = false;
 
     function onDocumentMouseDown(event) {
       const frame = scene.children[0].children[1];
@@ -333,6 +335,7 @@ var APP = {
       const mediumGear = cassette.children[2];
       const bigGear = cassette.children[4];
       const frontBolts = cassette.children[0];
+      const whoosh = document.querySelector('audio');
 
       mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
       mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
@@ -341,8 +344,15 @@ var APP = {
       var intersects = raycaster.intersectObjects(scene.children[0].children[3].children);
 
       if (intersects.length > 0) {
-        cameraMovement.play();
-        bikeColor();
+        if (!animationPlayed) {
+          cameraMovement.play();
+          bikeColor();
+          whoosh.play();
+          animationPlayed = !animationPlayed
+        } else {
+          cameraMovement.reverse();
+          animationPlayed = !animationPlayed
+        }
       }
 
       cameraMovement.to(camera.position, 2, {
