@@ -2,6 +2,41 @@
  * @author mrdoob / http://mrdoob.com/
  */
 
+// >>>><<<<
+// setting global empty variables
+let frame;
+let cassette;
+let pedal;
+let smallGear;
+let mediumGear;
+let bigGear;
+let frontBolts;
+let whoosh;
+let content;
+whoosh = document.querySelector('audio');
+content = document.querySelector('.content');
+let animationPlayed = false;
+let keyDown = false;
+
+//setting animation timelines
+let cameraMovement = new TimelineMax({
+  paused: true,
+});
+let discMovement = new TimelineMax({
+  paused: true
+});
+let discRotation = new TimelineMax({
+  paused: true
+});
+let sceneRotation = new TimelineMax({
+  paused: true
+});
+let contentShow = new TimelineMax({
+  paused: true
+});
+// >>>><<<<
+
+
 var APP = {
 
   Player: function() {
@@ -119,6 +154,108 @@ var APP = {
 
       dispatch(events.init, arguments);
 
+      // >>>><<<<
+      //setting elements
+      const sceneElements = scene.children[0].children;
+
+      sceneElements.forEach(function(element) {
+        switch (element.name) {
+          case 'frame':
+            frame = element;
+            break;
+          case 'pedal':
+            pedal = element;
+            break;
+          case 'gears':
+            cassette = element;
+            setCassette();
+            break;
+          default:
+        }
+      })
+
+      function setCassette() {
+        cassette.children.forEach(function(element) {
+          switch (element.name) {
+            case 'small-gear':
+              smallGear = element;
+              break;
+            case 'medium-gear':
+              mediumGear = element;
+              break;
+            case 'big-gear':
+              bigGear = element;
+              break;
+            case 'bolts':
+              frontBolts = element;
+              break;
+            default:
+          }
+        })
+      }
+
+      //setting mouse
+      mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+      mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+
+      // setting timing of the timelines
+      cameraMovement.to(camera.position, 2, {
+        x: 3,
+        y: 3,
+        z: 4,
+      }, 'start')
+        .to(camera.rotation, 2, {
+          y: 1.2,
+        }, 'start')
+        .add(discMovement.play(), 'start+=1')
+        .add(discRotation.play(), 'start+=1')
+        .add(contentShow.play(), 'start+=1')
+        .add(function() {
+          bikeTransparant();
+        }, 'start')
+
+      discMovement.to(smallGear.position, 2, {
+        z: 0.5,
+      }, 'start')
+        .to(mediumGear.position, 2, {
+          z: 1,
+        }, 'start')
+        .to(bigGear.position, 2, {
+          z: 1.5,
+        }, 'start')
+        .to(frontBolts.position, 2, {
+          z: 2,
+        }, 'start')
+        .to(pedal.position, 2, {
+          z: 3.5
+        }, 'start')
+
+      discRotation.to(cassette.rotation, 2, {
+        z: 2
+      })
+
+      contentShow.to(content, 1, {
+        width: '25%',
+      })
+
+      function bikeTransparant() {
+        if (animationPlayed) {
+          changeTransparent(0.2);
+        } else {
+          changeTransparent(1);
+        }
+      }
+
+      function changeTransparent(t) {
+        frame.children.forEach(function(element) {
+          element.material.transparent = true;
+          TweenMax.to(element.material, 2, {
+            opacity: t
+          })
+        });
+      }
+      // >>>><<<<
+
     };
 
     this.setCamera = function(value) {
@@ -149,6 +286,15 @@ var APP = {
         }
 
       }
+      // >>>><<<<
+      //setting camera position basis
+      camera.position.x = 0;
+      camera.position.y = 5;
+      camera.position.z = 15;
+      camera.rotation.x = 0;
+      camera.rotation.y = 0;
+      camera.rotation.z = 0;
+    // >>>><<<<
     };
 
     this.setScene = function(value) {
@@ -221,7 +367,6 @@ var APP = {
       }
 
       prevTime = time;
-
     }
 
     this.play = function() {
@@ -277,36 +422,8 @@ var APP = {
 
 
 
-    let cameraMovement = new TimelineMax({
-      paused: true,
-    });
-    let discMovement = new TimelineMax({
-      paused: true
-    });
-    let discRotation = new TimelineMax({
-      paused: true
-    });
-    let sceneRotation = new TimelineMax({
-      paused: true
-    });
-    let contentShow = new TimelineMax({
-      paused: true
-    });
 
     function onDocumentKeyDown(event) {
-      switch (event.key) {
-        case 's':
-          scene.rotation.y = 0;
-          camera.position.x = 0;
-          camera.position.y = 5;
-          camera.position.z = 15;
-          camera.rotation.x = 0;
-          camera.rotation.y = 0;
-          camera.rotation.z = 0;
-          break;
-        default:
-      // console.log(event.key);
-      }
 
       dispatch(events.keydown, event);
 
@@ -318,87 +435,25 @@ var APP = {
 
     }
 
-    // alert("use 's' to reset the frame, 'r' to start the rotation and click on the gear cassette to start the animation");
-    let animationPlayed = false;
-    let keyDown = false;
 
     function onDocumentMouseDown(event) {
       keyDown = true;
-
-      const frame = scene.children[0].children[1];
-      const cassette = scene.children[0].children[3];
-      const padel = scene.children[0].children[2];
-      const smallGear = cassette.children[1];
-      const mediumGear = cassette.children[2];
-      const bigGear = cassette.children[4];
-      const frontBolts = cassette.children[0];
-      const whoosh = document.querySelector('audio');
-      const content = document.querySelector('.content');
-
-      mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-      mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
 
       raycaster.setFromCamera(mouse, camera);
       var intersects = raycaster.intersectObjects(scene.children[0].children[3].children);
 
       if (intersects.length > 0) {
         if (!animationPlayed) {
+          TweenMax.to(scene.rotation, 1, {
+            y: 0
+          })
           cameraMovement.play();
-          bikeColor();
           whoosh.play();
           animationPlayed = !animationPlayed
         } else {
           cameraMovement.reverse();
           animationPlayed = !animationPlayed
         }
-      }
-
-      cameraMovement.to(camera.position, 2, {
-        x: 2,
-        y: 3,
-        z: 4,
-      }, 'start')
-        .to(camera.rotation, 2, {
-          y: 1.2,
-        }, 'start')
-        .to(scene.rotation, 2, {
-          y: 0,
-        }, 'start')
-        .add(discMovement.play(), 'start+=1')
-        .add(discRotation.play(), 'start+=1')
-        .add(contentShow.play(), 'start+=2')
-
-      discMovement.to(smallGear.position, 2, {
-        z: 0.5,
-      }, 'start')
-        .to(mediumGear.position, 2, {
-          z: 1,
-        }, 'start')
-        .to(bigGear.position, 2, {
-          z: 1.5,
-        }, 'start')
-        .to(frontBolts.position, 2, {
-          z: 2,
-        }, 'start')
-        .to(padel.position, 2, {
-          z: 3.5
-        }, 'start')
-
-      discRotation.to(cassette.rotation, 2, {
-        z: 2
-      })
-
-      contentShow.to(content, 1, {
-        width: '25%',
-      })
-
-      function bikeColor() {
-        frame.children.forEach(function(element) {
-          element.material.transparent = true;
-          TweenMax.to(element.material, 2, {
-            opacity: 0.2
-          })
-        });
       }
 
       dispatch(events.mousedown, event);
