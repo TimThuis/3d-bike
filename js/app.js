@@ -289,6 +289,9 @@ var APP = {
     let sceneRotation = new TimelineMax({
       paused: true
     });
+    let contentShow = new TimelineMax({
+      paused: true
+    });
 
     function onDocumentKeyDown(event) {
       switch (event.key) {
@@ -330,6 +333,7 @@ var APP = {
       const bigGear = cassette.children[4];
       const frontBolts = cassette.children[0];
       const whoosh = document.querySelector('audio');
+      const content = document.querySelector('.content');
 
       mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
       mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
@@ -350,18 +354,19 @@ var APP = {
       }
 
       cameraMovement.to(camera.position, 2, {
-        x: 3.5,
+        x: 2,
         y: 3,
-        z: 5,
+        z: 4,
       }, 'start')
         .to(camera.rotation, 2, {
-          y: 1,
+          y: 1.2,
         }, 'start')
         .to(scene.rotation, 2, {
           y: 0,
         }, 'start')
         .add(discMovement.play(), 'start+=1')
         .add(discRotation.play(), 'start+=1')
+        .add(contentShow.play(), 'start+=2')
 
       discMovement.to(smallGear.position, 2, {
         z: 0.5,
@@ -381,7 +386,11 @@ var APP = {
 
       discRotation.to(cassette.rotation, 2, {
         z: 2
-      }, "start")
+      })
+
+      contentShow.to(content, 1, {
+        width: '25%',
+      })
 
       function bikeColor() {
         frame.children.forEach(function(element) {

@@ -1,0 +1,16 @@
+body {
+  background-color: #000;
+  margin: 0px;
+  overflow: hidden;
+  position: relative;
+  perspective: 20em;
+}
+
+.content {
+  position: absolute;
+  width: 0%;
+  height: 100vh;
+  z-index: 10;
+  background: black;
+  color: white;
+}
