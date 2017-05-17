@@ -528,8 +528,8 @@ var APP = {
       }
 
       if (keyDown && !animationPlayed) {
-        let rotation = (event.pageX - mouseXStart) / window.innerWidth
-        scene.rotation.y = baseRotation + rotation;
+        let rotation = ((event.pageX - mouseXStart) * 6) / window.innerWidth
+        scene.rotation.y = (baseRotation + rotation);
       }
 
       dispatch(events.mousemove, event);
