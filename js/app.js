@@ -398,11 +398,15 @@ var APP = {
         if (!sceneIsRendered) {
           sceneIsRendered = !sceneIsRendered
           hideLoadingScreen.play();
+          TweenMax.from(scene.rotation, 2, {
+            y: 2
+          })
         }
         hideLoadingScreen.to('#loading', 1, {
           opacity: 0,
           display: 'none'
-        })
+        }, 'start')
+
       // >>>><<<<
       }
 
