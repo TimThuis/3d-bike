@@ -206,7 +206,7 @@ var APP = {
           y: 1.2,
         }, 'start')
         .add(discMovement.play(), 'start+=1')
-        .add(contentShow.play(), 'start+=1')
+      cameraMovement.add(contentShow.play(), 'start+=1')
         .add(function() {
           bikeTransparant();
         }, 'start')
@@ -236,9 +236,31 @@ var APP = {
           z: 3.5
         }, 'start')
 
-      contentShow.to(content, 1, {
-        width: '25%',
-      })
+      contentShow.to('.content', 1, {
+        transform: 'translateX(0%)'
+      }, 'start')
+        .from('.header', 1, {
+          height: 0,
+          transform: 'translateY(-500px)'
+        }, 'start')
+        .from('h1', 0.5, {
+          height: 0
+        }, 'start+=1')
+        .from('hr', 0.5, {
+          width: 0
+        }, "start+=1.5")
+        .staggerFrom('p', 0.25, {
+          opacity: 0,
+          transform: 'translateX(-100px)'
+        }, 0.2, 'start+=2')
+        .from('.video-container', 0.25, {
+          opacity: 0,
+          transform: 'translateX(-100px)'
+        }, 'start+=2.8')
+        .to('button', 0.5, {
+          transform: 'scale(1)'
+        }, 'start+=3')
+
 
       function bikeTransparant() {
         if (animationPlayed) {
@@ -458,7 +480,6 @@ var APP = {
           animationPlayed = !animationPlayed
         }
       }
-
 
       dispatch(events.mousedown, event);
 
