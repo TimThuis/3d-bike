@@ -15,10 +15,12 @@ let whoosh;
 let content;
 whoosh = document.querySelector('audio');
 content = document.querySelector('.content');
+loadingAnimation = document.querySelector('#loading');
 let animationPlayed = false;
 let keyDown = false;
 let baseRotation = 0;
 let mouseXStart = 0;
+let sceneIsRendered = false;
 
 //setting animation timelines
 let cameraMovement = new TimelineMax({
@@ -36,6 +38,10 @@ let sceneRotation = new TimelineMax({
 let contentShow = new TimelineMax({
   paused: true
 });
+let hideLoadingScreen = new TimelineMax({
+  paused: true
+});
+
 // >>>><<<<
 
 
@@ -205,11 +211,11 @@ var APP = {
         .to(camera.rotation, 2, {
           y: 1.2,
         }, 'start')
-        .add(discMovement.play(), 'start+=1')
-      cameraMovement.add(contentShow.play(), 'start+=1')
+        .add(contentShow.play(), 'start')
         .add(function() {
           bikeTransparant();
         }, 'start')
+        .add(discMovement.play(), 'start+=1')
 
       discMovement.to(smallGear.position, 2, {
         z: 0.5,
@@ -388,6 +394,16 @@ var APP = {
 
         renderer.render(scene, camera);
 
+        // loading animation checker
+        if (!sceneIsRendered) {
+          sceneIsRendered = !sceneIsRendered
+          hideLoadingScreen.play();
+        }
+        hideLoadingScreen.to('#loading', 1, {
+          opacity: 0,
+          display: 'none'
+        })
+      // >>>><<<<
       }
 
       prevTime = time;
@@ -541,3 +557,10 @@ var APP = {
   }
 
 };
+// console.log(THREE);
+//
+// const timer = setInterval(function() {
+//   if (THREE) return;
+//   clearInterval(timer);
+//   console.log("succes");
+// }, 100);
