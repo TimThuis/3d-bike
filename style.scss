@@ -4,6 +4,18 @@ body {
   overflow: hidden;
   position: relative;
   perspective: 20em;
+  font-family: 'Open Sans', sans-serif;
+  h1 {
+    font-weight: bold;
+    text-transform: uppercase;
+  }
+  p {
+    font-weight: 300;
+  }
+  h1, p, hr {
+    margin: 0;
+    padding: 0;
+  }
 }
 
 .content {
@@ -11,6 +23,48 @@ body {
   width: 0%;
   height: 100vh;
   z-index: 10;
-  background: black;
+  background: rgba(70,70,75,0.75);
   color: white;
+  overflow: auto;
+  .intro {
+    font-weight: 400;
+  }
+  .divider {
+    position: relative;
+    hr {
+      position: absolute;
+      width: 100%;
+    }
+    hr:first-child {
+      border-color: #7AC141;
+      width: 32px;
+    }
+  }
+  hr {
+    border: 2px solid rgba(255,255,255,0.25)
+  }
+  .header {
+    padding: 64px 32px 32px 32px;
+    background-image: url(./src/background.jpg);
+    background-position: left top;
+  }
+  .details {
+    padding: 32px 32px 64px 32px;
+    img {
+      width: 100%;
+    }
+    p {
+      padding-bottom: 16px
+    }
+    button {
+      width: 100%;
+      border: 0;
+      background: #7AC141;
+      color: white;
+      padding: 16px;
+      font-size: 16px;
+      text-transform: uppercase;
+      font-weight: 500;
+    }
+  }
 }

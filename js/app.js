@@ -17,6 +17,8 @@ whoosh = document.querySelector('audio');
 content = document.querySelector('.content');
 let animationPlayed = false;
 let keyDown = false;
+let baseRotation = 0;
+let mouseXStart = 0;
 
 //setting animation timelines
 let cameraMovement = new TimelineMax({
@@ -194,10 +196,6 @@ var APP = {
         })
       }
 
-      //setting mouse
-      mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
-      mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
-
       // setting timing of the timelines
       cameraMovement.to(camera.position, 2, {
         x: 3,
@@ -208,7 +206,6 @@ var APP = {
           y: 1.2,
         }, 'start')
         .add(discMovement.play(), 'start+=1')
-        .add(discRotation.play(), 'start+=1')
         .add(contentShow.play(), 'start+=1')
         .add(function() {
           bikeTransparant();
@@ -217,11 +214,20 @@ var APP = {
       discMovement.to(smallGear.position, 2, {
         z: 0.5,
       }, 'start')
+        .to(smallGear.rotation, 2, {
+          z: 1,
+        }, 'start')
         .to(mediumGear.position, 2, {
           z: 1,
         }, 'start')
+        .to(mediumGear.rotation, 2, {
+          z: 2,
+        }, 'start')
         .to(bigGear.position, 2, {
           z: 1.5,
+        }, 'start')
+        .to(bigGear.rotation, 2, {
+          z: 3,
         }, 'start')
         .to(frontBolts.position, 2, {
           z: 2,
@@ -229,10 +235,6 @@ var APP = {
         .to(pedal.position, 2, {
           z: 3.5
         }, 'start')
-
-      discRotation.to(cassette.rotation, 2, {
-        z: 2
-      })
 
       contentShow.to(content, 1, {
         width: '25%',
@@ -438,6 +440,7 @@ var APP = {
 
     function onDocumentMouseDown(event) {
       keyDown = true;
+      mouseXStart = event.pageX;
 
       raycaster.setFromCamera(mouse, camera);
       var intersects = raycaster.intersectObjects(scene.children[0].children[3].children);
@@ -456,46 +459,41 @@ var APP = {
         }
       }
 
+
       dispatch(events.mousedown, event);
 
     }
 
     function onDocumentMouseUp(event) {
+      baseRotation = scene.rotation.y
       keyDown = false;
-
       dispatch(events.mouseup, event);
 
     }
 
     function onDocumentMouseMove(event) {
 
+      const middleOfScreen = window.innerWidth / 2;
       mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
       mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
 
       raycaster.setFromCamera(mouse, camera);
       var intersects = raycaster.intersectObjects(scene.children[0].children[3].children);
 
-      if (intersects.length > 0) {
-        hover(true, 0.5);
-      } else {
-        hover(false, 1);
-      }
+      intersects.length > 0 ? hover(1, 1, 1) : hover(0.64, 0.64, 0.64);
 
-      function hover(a, b) {
-        scene.children[0].children[3].children.forEach(function(element) {
-          element.material.transparent = a;
-          element.material.opacity = b;
+      function hover(r, g, b) {
+        cassette.children.forEach(function(element) {
+          element.material.color.r = r;
+          element.material.color.g = g;
+          element.material.color.b = b;
         });
       }
-      const middleOfScreen = window.innerWidth / 2;
 
-      if (keyDown) {
-        // console.log((event.pageX - middleOfScreen) / middleOfScreen)
-
-        scene.rotation.y = (event.pageX - middleOfScreen) / middleOfScreen;
+      if (keyDown && !animationPlayed) {
+        let rotation = (event.pageX - mouseXStart) / window.innerWidth
+        scene.rotation.y = baseRotation + rotation;
       }
-
-
 
       dispatch(events.mousemove, event);
 
