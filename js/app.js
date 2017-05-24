@@ -11,9 +11,9 @@ let smallGear;
 let mediumGear;
 let bigGear;
 let frontBolts;
-let whoosh;
+let voiceOver;
 let content;
-whoosh = document.querySelector('audio');
+voiceOver = document.querySelector('audio');
 content = document.querySelector('.content');
 loadingAnimation = document.querySelector('#loading');
 let animationPlayed = false;
@@ -21,6 +21,7 @@ let keyDown = false;
 let baseRotation = 0;
 let mouseXStart = 0;
 let sceneIsRendered = false;
+let hovered = false
 
 //setting animation timelines
 let cameraMovement = new TimelineMax({
@@ -41,6 +42,10 @@ let contentShow = new TimelineMax({
 let hideLoadingScreen = new TimelineMax({
   paused: true
 });
+let pulsAnimation = new TimelineMax({
+  paused: true,
+  repeat: 5,
+})
 
 // >>>><<<<
 
@@ -404,7 +409,6 @@ var APP = {
           TweenMax.from(scene.rotation, 2, {
             y: 2
           })
-          // console.log(camera);
           TweenMax.from(camera.position, 2, {
             y: -6,
             z: 50
@@ -412,11 +416,13 @@ var APP = {
           TweenMax.from(camera.rotation, 2, {
             z: -1.5,
           })
+          pulsAnimation.play();
         }
         hideLoadingScreen.to('#loading', 2, {
           opacity: 0,
           display: 'none'
         }, 'start')
+
 
       // >>>><<<<
       }
@@ -504,7 +510,7 @@ var APP = {
             y: 0
           })
           cameraMovement.play();
-          whoosh.play();
+          voiceOver.play();
           animationPlayed = !animationPlayed
         } else {
           cameraMovement.reverse();
@@ -532,9 +538,10 @@ var APP = {
       raycaster.setFromCamera(mouse, camera);
       var intersects = raycaster.intersectObjects(scene.children[0].children[2].children);
 
-      intersects.length > 0 ? hover(1, 1, 1) : hover(0.64, 0.64, 0.64);
+      intersects.length > 0 ? hover(0.07, 0.59, 0.14) : hover(1, 1, 1);
 
       function hover(r, g, b) {
+        hoverd = true;
         cassette.children.forEach(function(element) {
           element.material.color.r = r;
           element.material.color.g = g;
@@ -543,8 +550,13 @@ var APP = {
       }
 
       if (keyDown && !animationPlayed) {
+
         let rotation = ((event.pageX - mouseXStart) * 6) / window.innerWidth
-        scene.rotation.y = (baseRotation + rotation);
+        let bikeRotation = baseRotation + rotation
+
+        if (bikeRotation < 1.4 && bikeRotation > -1.4) {
+          scene.rotation.y = bikeRotation;
+        }
       }
 
       dispatch(events.mousemove, event);
