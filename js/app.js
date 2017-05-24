@@ -44,7 +44,6 @@ let hideLoadingScreen = new TimelineMax({
 });
 let pulsAnimation = new TimelineMax({
   paused: true,
-  repeat: 5,
 })
 
 // >>>><<<<
@@ -416,7 +415,7 @@ var APP = {
           TweenMax.from(camera.rotation, 2, {
             z: -1.5,
           })
-          pulsAnimation.play();
+          startPulsAnimation();
         }
         hideLoadingScreen.to('#loading', 2, {
           opacity: 0,
@@ -481,7 +480,24 @@ var APP = {
 
     };
 
+    function startPulsAnimation() {
+      const cE = scene.children[0].children[2].children;
 
+      cE.forEach(function(element) {
+        pulsAnimation.to(element.material.color, 1, {
+          r: 0.07,
+          g: 0.59,
+          b: 0.14,
+        })
+          .to(element.material.color, 1, {
+            r: 1,
+            g: 1,
+            b: 1,
+          })
+      })
+
+      pulsAnimation.play();
+    }
 
 
     function onDocumentKeyDown(event) {
@@ -538,10 +554,15 @@ var APP = {
       raycaster.setFromCamera(mouse, camera);
       var intersects = raycaster.intersectObjects(scene.children[0].children[2].children);
 
-      intersects.length > 0 ? hover(0.07, 0.59, 0.14) : hover(1, 1, 1);
+      if (intersects.length > 0) {
+        hover(0.07, 0.59, 0.14)
+        hovered = true;
+        pulsAnimation.stop();
+      } else if (hovered) {
+        hover(1, 1, 1);
+      }
 
       function hover(r, g, b) {
-        hoverd = true;
         cassette.children.forEach(function(element) {
           element.material.color.r = r;
           element.material.color.g = g;
