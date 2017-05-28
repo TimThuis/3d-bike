@@ -13,6 +13,7 @@ let bigGear;
 let frontBolts;
 let voiceOver;
 let content;
+let directionLight;
 voiceOver = document.querySelector('audio');
 content = document.querySelector('.content');
 loadingAnimation = document.querySelector('#loading');
@@ -43,6 +44,10 @@ let hideLoadingScreen = new TimelineMax({
   paused: true
 });
 let pulsAnimation = new TimelineMax({
+  paused: true,
+  repeat: 2,
+})
+let startCameraMove = new TimelineMax({
   paused: true,
 })
 
@@ -169,7 +174,7 @@ var APP = {
       // >>>><<<<
       //setting elements
       const sceneElements = scene.children[0].children;
-
+      directionLight = scene.children[2]
       sceneElements.forEach(function(element) {
         switch (element.name) {
           case 'frame':
@@ -405,22 +410,38 @@ var APP = {
         if (!sceneIsRendered) {
           sceneIsRendered = !sceneIsRendered
           hideLoadingScreen.play();
-          TweenMax.from(scene.rotation, 2, {
-            y: 2
-          })
-          TweenMax.from(camera.position, 2, {
-            y: -6,
-            z: 50
-          })
-          TweenMax.from(camera.rotation, 2, {
-            z: -1.5,
-          })
+          startCameraMove.play();
           startPulsAnimation();
+
+          startCameraMove.from(scene.rotation, 2, {
+            y: 2
+          }, 'start')
+            .from(camera.position, 2, {
+              y: -6,
+              z: 50
+            }, "start")
+            .from(camera.rotation, 2, {
+              z: -1.5,
+            }, 'start')
+            .from(directionLight.position, 2, {
+              z: -8,
+            }, 'start+=2')
+            .from(directionLight.color, 2, {
+              r: 0,
+              b: 0,
+              g: 0,
+            }, 'start+=2')
+            .add(function() {
+              voiceOver.play();
+            }, 'start+=3')
+
         }
         hideLoadingScreen.to('#loading', 2, {
           opacity: 0,
           display: 'none'
         }, 'start')
+
+
 
 
       // >>>><<<<
@@ -485,9 +506,9 @@ var APP = {
 
       cE.forEach(function(element) {
         pulsAnimation.to(element.material.color, 1, {
-          r: 0.07,
-          g: 0.59,
-          b: 0.14,
+          r: 0.3,
+          g: 0.8,
+          b: 0.2,
         })
           .to(element.material.color, 1, {
             r: 1,
@@ -526,7 +547,6 @@ var APP = {
             y: 0
           })
           cameraMovement.play();
-          voiceOver.play();
           animationPlayed = !animationPlayed
         } else {
           cameraMovement.reverse();
@@ -555,7 +575,7 @@ var APP = {
       var intersects = raycaster.intersectObjects(scene.children[0].children[2].children);
 
       if (intersects.length > 0) {
-        hover(0.07, 0.59, 0.14)
+        hover(0.3, 0.8, 0.2)
         hovered = true;
         pulsAnimation.stop();
       } else if (hovered) {
